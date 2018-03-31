@@ -7,8 +7,8 @@ var db = new sqlite3.Database('gateway.db');
 var gateway_id = '0000000000000000';
 var mqtt_address = 'mqtt://localhost';
 var mqtt_status = '!connected';
-var auto_discover = true;
-var auto_connect = true;
+var auto_discover = false;
+var auto_connect = false;
 
 var interfaces = os.networkInterfaces();
 /* TODO: check for the new interfaces default names of the Linux environments*/

@@ -99,7 +99,7 @@ function sendData() {
 ## Development
 
 ##### Install environment
-**MacOS**
+**macOS**
 ```
 brew install nodejs nginx
 git clone https://github.com/bogdanoniga/ble_gateway.git
@@ -109,6 +109,9 @@ mv ./nginx.conf /usr/local/etc/nginx/nginx.conf
 ```
 
 **[Raspbian Stretch Lite (Raspberry Pi)](http://ftp.jaist.ac.jp/pub/raspberrypi/raspbian_lite/images/raspbian_lite-2018-03-14/)**
+- Setting up your Raspberry Pi: [RPi setup](https://github.com/bogdanoniga/learning/blob/master/Raspberry/setup.md)
+
+- Setting up BLE Gateway
 ```
 sudo apt-get update
 sudo apt-get dist-upgrade
@@ -125,7 +128,11 @@ sudo service nginx restart
 ##### Start dev environment
 
 ```
+# macOS
 DEBUG=express-locallibrary-tutorial:* npm run devstart
+
+# Raspbian
+DEBUG=express-locallibrary-tutorial:* npm sudo run devstart
 ```
 
 
