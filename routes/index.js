@@ -23,11 +23,11 @@ router.get('/', function(req, res, next) {
   db.close();
 
   for (device in devices) {
-    if (device['status'] == 'connected') {
+    if (devices[device]['status'] == 'connected') {
       devices_connected += 1;
     }
   }
-  
+
   setTimeout(function() {
     res.render('index', {gateway_id: gateway_id, mqtt_address: mqtt_address, mqtt_connection: mqtt_connection, devices_connected: devices_connected});
   }, 100);

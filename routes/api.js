@@ -387,4 +387,4 @@ function discoverDevices() {
 
 
 module.exports = router;
-module.exports.devices = getDevices();
+module.exports.devices = deviceInfo;
