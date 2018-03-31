@@ -132,7 +132,7 @@ sudo service nginx restart
 DEBUG=express-locallibrary-tutorial:* npm run devstart
 
 # Raspbian
-DEBUG=express-locallibrary-tutorial:* npm sudo run devstart
+DEBUG=express-locallibrary-tutorial:* sudo npm run devstart
 ```
 
 

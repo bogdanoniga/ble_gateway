@@ -24,7 +24,7 @@ router.get('/', function(req, res, next) {
   db.close();
 
   for (device in devices) {
-    if (devices[device]['status'] == 'connected') {
+    if (devices[device].state == 'connected') {
       devices_connected += 1;
     }
   }

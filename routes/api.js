@@ -18,19 +18,21 @@ setTimeout(function() {
   auto_discover = mqtt_connection.auto_discover;
   auto_connect = mqtt_connection.auto_connect;
   /* Activate MQTT on message listener */
-  sendData();
+  receiveData();
 }, 5000);
 
 var peripherals = {};
-var deviceInfo = {};
 var write_characteristics = {};
+var notify_characteristics = {};
 
-var initial = true;
+var scanning = true;
 
 setTimeout(function() {
   autoDiscover(auto_discover);
 }, 6000);
 
+
+/* /discover - discover devices */
 router.get('/discover', function(req, res, next) {
   discoverDevices();
 
@@ -40,33 +42,51 @@ router.get('/discover', function(req, res, next) {
   }, 6000);
 });
 
+
+/* /devices - return the list of discovered devices */
 router.get('/devices', function(req, res, next) {
   result = getDevices();
   res.json(result);
 });
 
+
+/* /connect - connect discovered device based on uuid as GET param */
 router.post('/connect', function(req, res, next) {
-  var uuid = req.body.uuid;
+  if (scanning == true) {
+    res.json({
+      response: "scanning in progress or no scan was performed"
+    });
+  }
+  else {
+    var uuid = req.body.uuid;
 
-  connectDevice(uuid);
+    connectDevice(uuid);
 
-  result = {"result": "ok"};
-  setTimeout(function() {
-    res.json(result);
-  }, 2500);
+    setTimeout(function() {
+      subscribeCharacteristic({uuid: notify_characteristics[uuid]});
+      res.json({
+        response: "ok"
+      });
+    }, 2500);
+  }
 });
 
+
+/* /disconnect - disconnect discovered device based on uuid as GET param */
 router.post('/disconnect', function(req, res, next) {
   var uuid = req.body.uuid;
 
   disconnectDevice(uuid);
 
-  result = {"result": "ok"};
   setTimeout(function() {
-    res.json(result);
+    res.json({
+      response: "ok"
+    });
   }, 2500);
 });
 
+
+/* /auto - auto_discover/auto_connect set mode */
 router.post('/auto', function(req, res, next) {
   var auto_discover = req.body.auto_discover;
   var auto_connect = req.body.auto_connect;
@@ -99,7 +119,7 @@ router.post('/auto', function(req, res, next) {
 
   setTimeout(function() {
     res.json({
-      status: "ok"
+      response: "ok"
     });
   }, 1000);
 });
@@ -139,16 +159,12 @@ function readPeripheral(peripheral) {
 
 
 function connectDevice(uuid) {
-  result = getDevices();
-  if (uuid in result && result[uuid]['status'] == 'disconnected') {
+  if (uuid in peripherals && peripherals[uuid].state == 'disconnected' && scanning != true) {
     device = peripherals[uuid];
     console.log("Connect: " + device.uuid);
     device.connect(); // attempt to connect to peripheral
 
     device.on('connect', readServices); // read services when you connect
-
-  } else if (!(uuid in result)) {
-    console.log("Device wasn't discovered");
   } else {
     console.log("Device already connected");
   }
@@ -186,64 +202,59 @@ function readServices() {
 // the service/characteristic explore function:
 function explore(error, services, characteristics) {
   // list the services and characteristics found:
-  subscribeCharacteristic(characteristics);
+  console.log('explore');
+  for (c in characteristics) {
+    if (characteristics[c].properties[0] == 'write') {
+      write_characteristics[characteristics[c]._peripheralId] = characteristics[c];
+    }
+    if (characteristics[c].properties[0] == 'notify') {
+      notify_characteristics[characteristics[c]._peripheralId] = characteristics[c];
+    }
+    peripherals[characteristics[c]._peripheralId].state = 'connected';
+  }
 }
 
 
 function subscribeCharacteristic(characteristics) {
   console.log('subscribe');
   for (c in characteristics) {
-    if (characteristics[c].properties[0] == 'write') {
-      write_characteristics[characteristics[c]._peripheralId] = characteristics[c];
-    }
-    if (characteristics[c].properties[0] == 'notify') {
+    var uuid = characteristics[c]._peripheralId;
+    if (uuid in peripherals && peripherals[uuid].state == 'connected') {
       characteristics[c].subscribe(); // subscribe to the characteristic
       characteristics[c].on('data', readData); // set a listener for it
-      deviceInfo[characteristics[c]._peripheralId] = {
-        "characteristics": characteristics,
-        "status": "connected"
-      };
     }
   }
 }
 
 
 function disconnectDevice(uuid) {
-  result = getDevices();
-  if (uuid in result && result[uuid]['status'] == 'connected') {
+  if (peripherals[uuid].state == 'connected' && scanning != true) {
     device = peripherals[uuid];
     console.log("Disconnect: " + device.uuid);
-    deviceCharacteristics = deviceInfo[uuid].characteristics;
 
     device.once('disconnect', function() {
       console.log("disconnecting");
     });
     device.removeListener('connect', readServices);
     device.disconnect();
-
-    if (uuid in deviceInfo) {
-      deviceInfo[uuid]["status"] = "disconnected";
-    }
-  } else if (!(uuid in result)) {
-    console.log("Device wasn't discovered");
-  } else {
+    peripherals[uuid].state = 'disconnected';
+  }
+  else {
     console.log("Device already disconnected");
   }
 }
+
 
 function getDevices() {
   var result = {};
   for (i in peripherals) {
     localName = peripherals[i].advertisement.localName;
-    deviceStatus = "disconnected";
-
-    if (i in deviceInfo) {
-      deviceStatus = deviceInfo[i].status;
-    }
+    deviceStatus = peripherals[i].state;
 
     if (localName == undefined) {
       localName = "unknown";
     }
+
     result[i] = {
       "localName": localName,
       "address": peripherals[i].address,
@@ -269,7 +280,7 @@ function readData(data) {
 }
 
 
-function sendData() {
+function receiveData() {
   mqtt_client.on('message', function(topic, message) {
     /*
     message = {
@@ -279,27 +290,27 @@ function sendData() {
     */
 
     /* Send to a specific target */
-    // var msg = JSON.parse(message.toString('utf-8'));
-    // var uuid = msg['uuid'];
-    // var payload = msg['payload'];
-    //
-    // sendMessage(uuid, payload);
-
     var msg = JSON.parse(message.toString('utf-8'));
+    var uuid = msg['uuid'];
     var payload = msg['payload'];
 
-    /* Broadcast the payload to all connected devices */
-    sendBroadcast(payload);
+    sendMessage(uuid, payload);
+
+    // var msg = JSON.parse(message.toString('utf-8'));
+    // var payload = msg['payload'];
+    //
+    // /* Broadcast the payload to all connected devices */
+    // sendBroadcast(payload);
   });
 }
 
-
+// Send the payload to the connected device with uuid
 function sendMessage(uuid, payload) {
   var message = "unknown";
 
-  for (i in deviceInfo[uuid].characteristics) {
-    charac = deviceInfo[uuid].characteristics[i];
-    if (charac.properties[0] == 'write') {
+  for (charac_uuid in write_characteristics) {
+    if (charac_uuid == uuid) {
+      charac = write_characteristics[charac_uuid];
       console.log("Characteristic: " + charac.uuid);
       charac.write(new Buffer.from(payload), false, function(error) {
         if (!error) {
@@ -365,24 +376,28 @@ function autoConnect(autoConnectFlag) {
     });
 
     db.close();
+    setTimeout(function() {
+      subscribeCharacteristic(notify_characteristics);
+    }, 1000);
   }
 }
 
 
 function discoverDevices() {
+  scanning = true;
   noble.on('stateChange', scanForPeripherals);
   noble.on('discover', readPeripheral);
 
-  if (initial != true)
+  if (scanning != true)
     noble.startScanning();
 
   setTimeout(function() {
     noble.stopScanning();
-    initial = false;
+    scanning = false;
     autoConnect(auto_connect);
   }, 5000);
 }
 
 
 module.exports = router;
-module.exports.devices = deviceInfo;
+module.exports.devices = peripherals;
