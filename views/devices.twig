@@ -1,0 +1,95 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+    <!-- **********************************************************************************************************************************************************
+    MAIN SIDEBAR MENU
+    *********************************************************************************************************************************************************** -->
+    <!--sidebar start-->
+    <aside>
+        <div id="sidebar"  class="nav-collapse ">
+            <!-- sidebar menu start-->
+            <ul class="sidebar-menu" id="nav-accordion">
+                <li class="mt">
+                    <a href="/">
+                        <i class="fa fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+
+                <li class="mt">
+                    <a class="active" href="devices">
+                        <i class="fa fa-desktop"></i>
+                        <span>Devices</span>
+                    </a>
+                </li>
+
+                <li class="mt">
+                    <a href="configs" >
+                        <i class="fa fa-cogs"></i>
+                        <span>Configurations</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- sidebar menu end-->
+        </div>
+    </aside>
+    <!--sidebar end-->
+
+    <!-- **********************************************************************************************************************************************************
+    MAIN CONTENT
+    *********************************************************************************************************************************************************** -->
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+            <div class="row mt">
+                  <div class="col-md-12">
+                      <div class="form-panel">
+                          <div class="table-header">
+                              <h4><i class="fa fa-angle-right"></i> Devices</h4>
+                              <button id="scan-devices" class="btn btn-theme03">Scan devices</button>
+
+                              <div id="auto_connect">
+                                <p class="auto-p">Auto connect</p>
+                                <label class="switch">
+                                  {% if auto_connect %}
+                                      <input type="checkbox" checked>
+                                  {% else %}
+                                      <input type="checkbox">
+                                  {% endif %}
+                                  <span class="slider round"></span>
+                                </label>
+                              </div>
+
+                              <div id="auto_discover">
+                                <p class="auto-p">Auto discover</p>
+                                <label class="switch">
+                                  {% if auto_discover %}
+                                      <input type="checkbox" checked>
+                                  {% else %}
+                                      <input type="checkbox">
+                                  {% endif %}
+                                  <span class="slider round"></span>
+                                </label>
+                              </div>
+                          </div>
+                          <table id="devices-table" class="table table-striped table-advance table-hover">
+                              <thead>
+                              <tr>
+                                  <th><i class="fa fa-caret-right"></i> Name</th>
+                                  <th class="hidden-phone"><i class="fa fa-map-marker"></i> UUID</th>
+                                  <th><i class="fa fa-location-arrow"></i> Address</th>
+                                  <th><i class="fa fa-rss"></i> RSSI</th>
+                                  <th><i class="fa fa-power-off"></i> Status</th>
+                                  <th></th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              </tbody>
+                          </table>
+                      </div><!-- /content-panel -->
+                  </div><!-- /col-md-12 -->
+              </div>
+        </section>
+    </section>
+
+{% endblock %}
