@@ -11,9 +11,10 @@ The **notify** characteristic is used by the BLE Gateway to read the data sent b
 
 The **write** characteristic is used to send the data received from MQTT Broker to the Bluetooth sensors.
 
-Example of a Bluetooth sensor implementation: link
+Example of a Bluetooth sensor implementation: [BLE_write_read.ino](https://github.com/bogdanoniga/IoT/blob/master/code_snippets/ble/esp32/BLE_write_read/BLE_write_read.ino)
 
----
+
+
 ## Web Application
 
 ### Devices (/devices)
@@ -33,7 +34,7 @@ Features offered by **/configs**:
 
 [![](./public/img/gateway/configs.png)](./public/img/gateway/configs.png)
 
----
+
 ## API
 
 **GET /api/discover** - start discover Bluetooth devices
@@ -51,7 +52,7 @@ Features offered by **/configs**:
   - **auto_discover** (true/false)
   - **auto_connect** (true/false)
 
----
+
 ## Methods
 **readData()** - Read messages received from devices and publish them to MQTT Broker
 ```
@@ -94,7 +95,7 @@ function sendData() {
 
 **sendBroadcast(payload)** - Broadcasts the payload to all connected devices
 
----
+
 ## Development
 
 ##### Install environment
@@ -125,7 +126,7 @@ mv ./nginx.conf /etc/nginx/sites-enabled/default
 DEBUG=express-locallibrary-tutorial:* npm run devstart
 ```
 
----
+
 ## Technical Stack
 
 - Noble BLE library (nodejs) - https://github.com/noble/noble
@@ -133,7 +134,7 @@ DEBUG=express-locallibrary-tutorial:* npm run devstart
 - Nginx - https://github.com/nginx/nginx
 - Dashgum Bootstrap template - https://github.com/esironal/dashgum-template
 
----
+
 ## Todo
 - [ ] Display the device services & characteristics
 - [ ] Check if devices have disconnected
@@ -142,7 +143,7 @@ DEBUG=express-locallibrary-tutorial:* npm run devstart
 - [ ] Web Authentication Method (Login User/Pass, Identity Plus)
 - [ ] Settings page (change user, pass, authentication method)
 
----
+
 ## MIT License
 
 Copyright (c) 2018 Bogdan Oniga
