@@ -147,9 +147,6 @@ function connectDevice(uuid) {
 
     device.on('connect', readServices); // read services when you connect
 
-    if (uuid in deviceInfo) {
-      deviceInfo[uuid]["status"] = "connected";
-    }
   } else if (!(uuid in result)) {
     console.log("Device wasn't discovered");
   } else {
