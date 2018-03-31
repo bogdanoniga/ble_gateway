@@ -50,10 +50,10 @@ router.post('/connect', function(req, res, next) {
 
   connectDevice(uuid);
 
-  result = getDevices();
+  result = {"result": "ok"};
   setTimeout(function() {
     res.json(result);
-  }, 1000);
+  }, 2500);
 });
 
 router.post('/disconnect', function(req, res, next) {
@@ -61,9 +61,10 @@ router.post('/disconnect', function(req, res, next) {
 
   disconnectDevice(uuid);
 
+  result = {"result": "ok"};
   setTimeout(function() {
     res.json(result);
-  }, 1000);
+  }, 2500);
 });
 
 router.post('/auto', function(req, res, next) {
