@@ -108,16 +108,18 @@ npm install
 mv ./nginx.conf /usr/local/etc/nginx/nginx.conf
 ```
 
-**Raspbian (Raspberry Pi)**
+**[Raspbian Stretch Lite (Raspberry Pi)](http://ftp.jaist.ac.jp/pub/raspberrypi/raspbian_lite/images/raspbian_lite-2018-03-14/)**
 ```
 sudo apt-get update
 sudo apt-get dist-upgrade
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get install -y nodejs nginx
+sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+sudo apt-get install -y nodejs nginx sqlite3 git
 git clone https://github.com/bogdanoniga/ble_gateway.git
 cd ./ble_gateway
 npm install
-mv ./nginx.conf /etc/nginx/sites-enabled/default
+sudo mv ./nginx.conf /etc/nginx/sites-enabled/default
+sudo service nginx restart
 ```
 
 ##### Start dev environment
