@@ -3,6 +3,7 @@ var router = express.Router();
 var sqlite3 = require('sqlite3').verbose();
 var api = require('./api');
 
+
 router.get('/', function(req, res, next) {
   var db = new sqlite3.Database('gateway.db');
 
@@ -33,39 +34,5 @@ router.get('/', function(req, res, next) {
   }, 100);
 });
 
-router.post('/save', function(req, res, next) {
-  // TODO - restart app when saving new broker address
-  var db = new sqlite3.Database('gateway.db');
-  var mqtt_address = req.body.mqtt_address;
-  var topic_tx = req.body.mqtt_subscribe_topic;
-  var topic_rx = req.body.mqtt_publish_topic;
-
-  if (mqtt_address == '' || topic_tx == '' || topic_rx == '') {
-      res.json({message:'Empty fields not allowed!'});
-  }
-  else {
-    db.serialize(function() {
-      var stmt = db.prepare("UPDATE configs SET mqtt_address = ?, topic_tx = ?, topic_rx = ? WHERE gateway_id = ?");
-
-      db.get("SELECT * FROM configs", [], (err, row) => {
-          if(row != undefined) {
-            stmt.run(mqtt_address, topic_tx, topic_rx, row['gateway_id']);
-            console.log('MQTT information updated!');
-            stmt.finalize();
-          }
-          else {
-            stmt.finalize();
-          }
-      });
-    });
-    db.close();
-
-    res.writeHead(302, {
-      'Location': '/configs'
-    });
-    res.end();
-  }
-
-});
 
 module.exports = router;
