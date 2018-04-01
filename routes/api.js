@@ -18,7 +18,7 @@ setTimeout(function() {
   auto_discover = mqtt_connection.auto_discover;
   auto_connect = mqtt_connection.auto_connect;
   /* Activate MQTT on message listener */
-  receiveData();
+  receiveMQTTData();
 }, 6000);
 
 var peripherals = {};
@@ -32,24 +32,6 @@ setTimeout(function() {
   autoDiscover(auto_discover);
 }, 7000);
 
-router.get('/test', function(req, res, next) {
-  var db = new sqlite3.Database('gateway.db');
-
-  var uuids = [];
-  db.serialize(function() {
-    db.all("SELECT * FROM devices", [], (err, rows) => {
-      if (rows != undefined) {
-        console.log(rows);
-      }
-    });
-  });
-
-  db.close();
-
-  setTimeout(function() {
-    res.json({gg: 'gg'});
-  }, 1000);
-});
 
 /* /discover - discover devices */
 router.get('/discover', function(req, res, next) {
@@ -146,26 +128,12 @@ router.post('/auto', function(req, res, next) {
 });
 
 
-/* TO BE REMOVED - just for testing purpose */
-router.post('/tx', function(req, res, next) {
-  var uuid = req.body.uuid;
-  var payload = req.body.payload;
-
-  // var message = sendMessage(uuid, payload);
-  var message = sendBroadcast(payload);
-  setTimeout(function() {
-    res.json({
-      "message": message
-    });
-  }, 2000);
-});
-
-
 function scanForPeripherals(state) {
   if (state === 'poweredOn') {
     console.log("start scanning");
     noble.startScanning([], true);
-  } else { // if Bluetooth is off
+  }
+  else { // if Bluetooth is off
     noble.stopScanning(); // stop scanning
     console.log("Please check that Bluetooth is turned on.");
   }
@@ -186,7 +154,8 @@ function connectDevice(uuid) {
     device.connect(); // attempt to connect to peripheral
 
     device.on('connect', readServices); // read services when you connect
-  } else {
+  }
+  else {
     console.log("Device already connected");
   }
 }
@@ -307,7 +276,7 @@ function readData(data) {
 }
 
 
-function receiveData() {
+function receiveMQTTData() {
   mqtt_client.on('message', function(topic, message) {
     /*
     message = {
@@ -330,6 +299,7 @@ function receiveData() {
     // sendBroadcast(payload);
   });
 }
+
 
 // Send the payload to the connected device with uuid
 function sendMessage(uuid, payload) {

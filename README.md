@@ -95,6 +95,14 @@ function sendData() {
 
 **sendBroadcast(payload)** - Broadcasts the payload to all connected devices
 
+**send message from MQTT Broker to Gateway**
+```
+mosquitto_pub -h localhost -t "gateway/<gateway_id>/tx" -m '{
+    "uuid": "<uuid>",
+    "payload": "<payload>"
+}'
+```
+
 
 ## Development
 
@@ -140,7 +148,6 @@ DEBUG=express-locallibrary-tutorial:* npm run devstart
 sudo service bluetooth restart
 DEBUG=express-locallibrary-tutorial:* sudo npm run devstart
 ```
-
 
 ## Technical Stack
 
