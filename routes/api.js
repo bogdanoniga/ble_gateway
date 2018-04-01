@@ -19,9 +19,10 @@ setTimeout(function() {
   auto_connect = mqtt_connection.auto_connect;
   /* Activate MQTT on message listener */
   receiveData();
-}, 5000);
+}, 6000);
 
 var peripherals = {};
+var device_characteristics = {};
 var write_characteristics = {};
 var notify_characteristics = {};
 
@@ -29,8 +30,26 @@ var scanning = true;
 
 setTimeout(function() {
   autoDiscover(auto_discover);
-}, 6000);
+}, 7000);
 
+router.get('/test', function(req, res, next) {
+  var db = new sqlite3.Database('gateway.db');
+
+  var uuids = [];
+  db.serialize(function() {
+    db.all("SELECT * FROM devices", [], (err, rows) => {
+      if (rows != undefined) {
+        console.log(rows);
+      }
+    });
+  });
+
+  db.close();
+
+  setTimeout(function() {
+    res.json({gg: 'gg'});
+  }, 1000);
+});
 
 /* /discover - discover devices */
 router.get('/discover', function(req, res, next) {
@@ -63,7 +82,9 @@ router.post('/connect', function(req, res, next) {
     connectDevice(uuid);
 
     setTimeout(function() {
-      subscribeCharacteristic({uuid: notify_characteristics[uuid]});
+      d = {}
+      d[uuid] = device_characteristics[uuid];
+      subscribeCharacteristic(d);
       res.json({
         response: "ok"
       });
@@ -174,27 +195,6 @@ function connectDevice(uuid) {
 function readServices() {
   // Look for services and characteristics.
   // Call the explore function when you find them:
-  console.log('read services');
-  var connected_uuid = this.uuid;
-
-  var db = new sqlite3.Database('gateway.db');
-
-  db.serialize(function() {
-    var stmt = db.prepare("INSERT INTO devices VALUES (?)");
-
-    db.get("SELECT * FROM devices WHERE uuid = ?", [connected_uuid], (err, row) => {
-      if (row == undefined) {
-        stmt.run(connected_uuid);
-        stmt.finalize();
-      } else {
-        stmt.finalize();
-      }
-    });
-
-  });
-
-  db.close();
-
   this.discoverAllServicesAndCharacteristics(explore);
 }
 
@@ -203,26 +203,51 @@ function readServices() {
 function explore(error, services, characteristics) {
   // list the services and characteristics found:
   console.log('explore');
-  for (c in characteristics) {
-    if (characteristics[c].properties[0] == 'write') {
-      write_characteristics[characteristics[c]._peripheralId] = characteristics[c];
-    }
-    if (characteristics[c].properties[0] == 'notify') {
-      notify_characteristics[characteristics[c]._peripheralId] = characteristics[c];
-    }
-    peripherals[characteristics[c]._peripheralId].state = 'connected';
-  }
+  device_characteristics[characteristics[0]._peripheralId] = characteristics;
 }
 
 
-function subscribeCharacteristic(characteristics) {
-  console.log('subscribe');
-  for (c in characteristics) {
-    var uuid = characteristics[c]._peripheralId;
-    if (uuid in peripherals && peripherals[uuid].state == 'connected') {
-      characteristics[c].subscribe(); // subscribe to the characteristic
-      characteristics[c].on('data', readData); // set a listener for it
+function saveDevice(uuid) {
+  var db = new sqlite3.Database('gateway.db');
+
+  db.serialize(function() {
+    var stmt = db.prepare("INSERT INTO devices VALUES (?)");
+
+    db.get("SELECT * FROM devices WHERE uuid = ?", [uuid], (err, row) => {
+      if (row == undefined) {
+        stmt.run(uuid);
+        stmt.finalize();
+      } else {
+        stmt.finalize();
+      }
+    });
+  });
+
+  db.close();
+}
+
+
+function subscribeCharacteristic(device_characteristics) {
+  for (uuid in device_characteristics) {
+    console.log("subscribe: " + uuid);
+    var characteristics = device_characteristics[uuid];
+    for (c in characteristics) {
+      if (characteristics[c].properties[0] == 'write') {
+        write_characteristics[uuid] = characteristics[c];
+      }
+      if (characteristics[c].properties[0] == 'notify') {
+        if (uuid in peripherals && peripherals[uuid].state == 'connected' && !(uuid in notify_characteristics)) {
+          characteristics[c].subscribe(); // subscribe to the characteristic
+          notify_characteristics[uuid] = characteristics[c];
+          characteristics[c].on('data', readData); // set a listener for it
+        }
+        else if (uuid in notify_characteristics) {
+          console.log('Already subscribed!')
+        }
+      }
     }
+    peripherals[uuid].state = 'connected';
+    saveDevice(uuid);
   }
 }
 
@@ -237,6 +262,8 @@ function disconnectDevice(uuid) {
     });
     device.removeListener('connect', readServices);
     device.disconnect();
+    delete write_characteristics[uuid];
+    delete notify_characteristics[uuid];
     peripherals[uuid].state = 'disconnected';
   }
   else {
@@ -377,8 +404,8 @@ function autoConnect(autoConnectFlag) {
 
     db.close();
     setTimeout(function() {
-      subscribeCharacteristic(notify_characteristics);
-    }, 1000);
+      subscribeCharacteristic(device_characteristics);
+    }, 5000);
   }
 }
 
@@ -394,8 +421,10 @@ function discoverDevices() {
   setTimeout(function() {
     noble.stopScanning();
     scanning = false;
-    autoConnect(auto_connect);
   }, 5000);
+  setTimeout(function() {
+    autoConnect(auto_connect);
+  }, 6000);
 }
 
 

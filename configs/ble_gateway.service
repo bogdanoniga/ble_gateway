@@ -1,0 +1,8 @@
+[Unit]
+After=bluetooth.service
+
+[Service]
+ExecStart=/usr/local/bin/ble_gateway.sh
+
+[Install]
+WantedBy=default.target

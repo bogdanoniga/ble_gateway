@@ -111,27 +111,33 @@ mv ./nginx.conf /usr/local/etc/nginx/nginx.conf
 **[Raspbian Stretch Lite (Raspberry Pi)](http://ftp.jaist.ac.jp/pub/raspberrypi/raspbian_lite/images/raspbian_lite-2018-03-14/)**
 - Setting up your Raspberry Pi: [RPi setup](https://github.com/bogdanoniga/learning/blob/master/Raspberry/setup.md)
 
-- Setting up BLE Gateway
+- Setting up BLE Gateway: `./setup.sh`
+
+- Start/Stop ble_gateway.service
 ```
-sudo apt-get update
-sudo apt-get dist-upgrade
-sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-sudo apt-get install -y nodejs nginx sqlite3 git
-git clone https://github.com/bogdanoniga/ble_gateway.git
-cd ./ble_gateway
-npm install
-sudo mv ./nginx.conf /etc/nginx/sites-enabled/default
-sudo service nginx restart
+sudo systemctl start ble_gateway.service
+sudo systemctl stop ble_gateway.service
+```
+
+- Read ble_gateway.service logs
+```
+journalctl -u ble_gateway.service -f
+```
+
+- Set ble_gateway.service to run at startup
+```
+sudo systemctl enable ble_gateway.service
 ```
 
 ##### Start dev environment
 
 ```
 # macOS
+# restart Bluetooth service
 DEBUG=express-locallibrary-tutorial:* npm run devstart
 
 # Raspbian
+sudo service bluetooth restart
 DEBUG=express-locallibrary-tutorial:* sudo npm run devstart
 ```
 

@@ -46,5 +46,5 @@ setTimeout(function() {
     module.exports.auto_connect = auto_connect;
   }, 1000);
 
-}, 3000);
+}, 4000);
 // END MQTT connect
