@@ -54,10 +54,7 @@ router.post('/save', function(req, res, next) {
     });
     db.close();
 
-    res.writeHead(302, {
-      'Location': 'configs'
-    });
-    res.end();
+    res.redirect('back');
   }
 
 });
