@@ -55,7 +55,7 @@ router.post('/save', function(req, res, next) {
     db.close();
 
     res.writeHead(302, {
-      'Location': '/configs'
+      'Location': 'configs'
     });
     res.end();
   }
