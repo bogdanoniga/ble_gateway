@@ -5,7 +5,7 @@ $(document).ready(function() {
         $.ajax({
             type: 'GET',
             dataType: "json",
-            url: '/api/discover',
+            url: 'api/discover',
             success: function(response) {
                 getDevices();
             }
@@ -23,7 +23,7 @@ $(document).ready(function() {
             type: 'POST',
             dataType: "json",
             data: jsonObj,
-            url: '/api/auto',
+            url: 'api/auto',
             success: function(response) {
                 console.log(response);
             }
@@ -39,7 +39,7 @@ $(document).ready(function() {
             type: 'POST',
             dataType: "json",
             data: jsonObj,
-            url: '/api/connect',
+            url: 'api/connect',
             success: function(response) {
                 getDevices();
             }
@@ -55,7 +55,7 @@ $(document).ready(function() {
             type: 'POST',
             dataType: "json",
             data: jsonObj,
-            url: '/api/disconnect',
+            url: 'api/disconnect',
             success: function(response) {
                 getDevices();
             }
@@ -68,7 +68,7 @@ function getDevices() {
     $.ajax({
         type: 'GET',
         dataType: "json",
-        url: '/api/devices',
+        url: 'api/devices',
         success: function(response) {
             updateDevices(response);
         }
