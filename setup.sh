@@ -11,7 +11,10 @@ sudo apt-get install -y nodejs nginx sqlite3 git
 
 echo "[*] Cloning ble_gateway software"
 cd /usr/share
-sudo git clone https://github.com/bogdanoniga/ble_gateway.git || true
+if [ ! -d "ble_gateway" ] ; then
+  sudo git clone https://github.com/bogdanoniga/ble_gateway.git || true
+fi
+
 cd ./ble_gateway
 npm install
 
