@@ -1,6 +1,6 @@
 echo "[*] Upgrading the system"
 sudo apt-get update
-sudo apt-get dist-upgrade
+sudo apt-get dist-upgrade -y
 
 echo "[*] Installing Bluetooth stack"
 sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
@@ -11,7 +11,7 @@ sudo apt-get install -y nodejs nginx sqlite3 git
 
 echo "[*] Cloning ble_gateway software"
 cd /usr/share
-sudo git clone https://github.com/bogdanoniga/ble_gateway.git
+sudo git clone https://github.com/bogdanoniga/ble_gateway.git || true
 cd ./ble_gateway
 npm install
 
