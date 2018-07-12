@@ -6,7 +6,7 @@ echo "[*] Installing Bluetooth stack"
 sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
 
 echo "[*] Installing Nodejs & npm"
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs nginx sqlite3 git
 
 echo "[*] Cloning ble_gateway software"
