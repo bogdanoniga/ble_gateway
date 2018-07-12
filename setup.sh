@@ -12,7 +12,7 @@ sudo apt-get install -y nodejs nginx sqlite3 git
 echo "[*] Cloning ble_gateway software"
 cd /usr/share
 sudo git clone https://github.com/bogdanoniga/ble_gateway.git
-sudo chmod 777 ./ble_gateway && cd ./ble_gateway
+cd ./ble_gateway
 npm install
 
 echo "[*] Setting nginx config"
@@ -25,3 +25,6 @@ sudo mv ./configs/ble_gateway.sh /usr/local/bin && sudo chmod 744 /usr/local/bin
 
 echo "[*] Reloading systemctl"
 sudo systemctl daemon-reload
+
+echo "[*] Start BLE gateway"
+sudo service ble_gateway start
