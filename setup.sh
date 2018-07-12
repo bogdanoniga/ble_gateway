@@ -15,7 +15,7 @@ if [ ! -d "ble_gateway" ] ; then
   sudo git clone https://github.com/bogdanoniga/ble_gateway.git || true
 fi
 sudo chmod -R 777 /usr/share/ble_gateway && cd /usr/share/ble_gateway
-sudo npm install -g
+npm install
 
 echo "[*] Setting nginx config"
 sudo mv ./configs/nginx.conf /etc/nginx/sites-enabled/default

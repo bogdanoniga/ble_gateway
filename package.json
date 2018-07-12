@@ -16,7 +16,7 @@
     "mqtt": "^2.15.3",
     "noble": "~1.9.0",
     "serve-favicon": "~2.4.5",
-    "sqlite3": "^3.1.13",
+    "sqlite3": "^4.0.1",
     "twig": "~0.10.3"
   },
   "devDependencies": {
