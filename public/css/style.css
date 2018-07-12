@@ -185,7 +185,6 @@ hr {
 
 .mt {
 	margin-top: 25px;
-  /* background-color: #16A085 !important; */
 }
 
 .mb {
@@ -364,7 +363,7 @@ ul.sidebar-menu li a{
 }
 
 ul.sidebar-menu li a.active, ul.sidebar-menu li a:hover, ul.sidebar-menu li a:focus {
-    background-color: #16A085 !important;
+    background-color: #166A85 !important;
     color: #fff;
     display: block;
 
@@ -410,7 +409,7 @@ ul.sidebar-menu li a.active i {
     left: 0;
     right: 0;
     z-index: 1002;
-    background-color: #16A085 !important;
+    background-color: #166A85 !important;
     border: none !important;
 }
 
