@@ -279,11 +279,10 @@ function ab2str(buf) {
 }
 
 function readData(data) {
-  console.log(this._peripheralId, ab2str(data));
-
   var message = {};
 
-  if (end_to_end_encryption = true) {
+  if (end_to_end_encryption) {
+    console.log(this._peripheralId, ab2str(data));
     message = {
         "phyPayload": ab2str(data),
         "rxInfo": {
@@ -310,6 +309,7 @@ function readData(data) {
     };
   }
   else {
+    console.log(this._peripheralId, data.readIntLE());
     message = {
       "device": this._peripheralId,
       "payload": data.readIntLE()
