@@ -9,6 +9,7 @@ var mqtt_address = 'mqtt://localhost';
 var mqtt_status = '!connected';
 var auto_discover = false;
 var auto_connect = false;
+var end_to_end_encryption = false;
 
 var interfaces = os.networkInterfaces();
 /* TODO: check for the new interfaces default names of the Linux environments*/
@@ -32,15 +33,15 @@ var topic_tx = 'gateway/' + gateway_id + '/tx';
 var topic_rx = 'gateway/' + gateway_id + '/rx';
 
 db.serialize(function() {
-  db.run("CREATE TABLE if not exists configs (gateway_id TEXT, mqtt_address TEXT, status TEXT, topic_tx TEXT, topic_rx TEXT, auto_discover BOOLEAN NOT NULL, auto_connect BOOLEAN NOT NULL)");
+  db.run("CREATE TABLE if not exists configs (gateway_id TEXT, mqtt_address TEXT, status TEXT, topic_tx TEXT, topic_rx TEXT, auto_discover BOOLEAN NOT NULL, auto_connect BOOLEAN NOT NULL, end_to_end_encryption BOOLEAN NOT NULL)");
   db.run("CREATE TABLE if not exists devices (uuid TEXT)");
 
-  var stmt = db.prepare("INSERT INTO configs VALUES (?, ?, ?, ?, ?, ?, ?)");
+  var stmt = db.prepare("INSERT INTO configs VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
   var upt = db.prepare("UPDATE configs SET status = ? WHERE gateway_id = ?");
 
   db.get("SELECT * FROM configs", [], (err, row) => {
       if(row == undefined) {
-        stmt.run(gateway_id, mqtt_address, mqtt_status, topic_tx, topic_rx, auto_discover, auto_connect);
+        stmt.run(gateway_id, mqtt_address, mqtt_status, topic_tx, topic_rx, auto_discover, auto_connect, end_to_end_encryption);
         stmt.finalize();
         upt.finalize();
       }

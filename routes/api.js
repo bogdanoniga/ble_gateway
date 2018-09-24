@@ -93,6 +93,7 @@ router.post('/disconnect', function(req, res, next) {
 router.post('/auto', function(req, res, next) {
   var auto_discover = req.body.auto_discover;
   var auto_connect = req.body.auto_connect;
+  var end_to_end_encryption = req.body.end_to_end_encryption;
 
   var db = new sqlite3.Database('gateway.db');
 
@@ -112,6 +113,16 @@ router.post('/auto', function(req, res, next) {
       if (auto_connect == 'true') {
         upt.run(true, false);
       } else if (auto_connect == 'false') {
+        upt.run(false, true);
+      }
+      upt.finalize();
+    }
+
+    if (end_to_end_encryption != undefined) {
+      var upt = db.prepare("UPDATE configs SET end_to_end_encryption = ? WHERE end_to_end_encryption = ?");
+      if (end_to_end_encryption == 'true') {
+        upt.run(true, false);
+      } else if (end_to_end_encryption == 'false') {
         upt.run(false, true);
       }
       upt.finalize();
@@ -261,42 +272,65 @@ function getDevices() {
   return result;
 }
 
+function ab2str(buf) {
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
+}
 
 function readData(data) {
-  console.log(this._peripheralId, data.readIntLE());
+  console.log(this._peripheralId, ab2str(data));
 
-  // message example
-  var message = {
-    "uuid": this._peripheralId,
-    "payload": data.readIntLE()
+  var message = {};
+
+  if (end_to_end_encryption = true) {
+    message = {
+        "phyPayload": ab2str(data),
+        "rxInfo": {
+            "board": 0,
+            "antenna": 0,
+            "channel": 1,
+            "codeRate": "4/5",
+            "crcStatus": 1,
+            "dataRate": {
+                "bandwidth": 125,
+                "modulation": "LORA",
+                "spreadFactor": 7
+            },
+            "frequency": 868300000,
+            "loRaSNR": 7,
+            "mac": "b827ebfffe8d6ed5",
+            "rfChain": 1,
+            "rssi": -57,
+            "size": 23,
+            "time": "2017-12-12T15:28:53.222434Z",
+            "timeSinceGPSEpoch": "332535h29m12.222s",
+            "timestamp": 2074240683
+        }
+    };
   }
-
+  else {
+    message = {
+      "device": this._peripheralId,
+      "payload": data.readIntLE()
+    }
+  }
   // Publish to MQTT Broker
   mqtt_client.publish(topic_rx, Buffer.from(JSON.stringify(message)));
 }
 
-
 function receiveMQTTData() {
   mqtt_client.on('message', function(topic, message) {
-    /*
-    message = {
-      uuid: "ble_device_uuid",
-      payload: "payload_from_server"
-    }
-    */
-
-    /* Send to a specific target */
     var msg = JSON.parse(message.toString('utf-8'));
-    var uuid = msg['uuid'];
-    var payload = msg['payload'];
 
-    sendMessage(uuid, payload);
+    if (end_to_end_encryption = true) {
+      var payload = msg['phyPayload'];
+      sendBroadcast(payload);
+    }
+    else {
+      var uuid = msg['device'];
+      var payload = msg['payload'];
 
-    // var msg = JSON.parse(message.toString('utf-8'));
-    // var payload = msg['payload'];
-    //
-    // /* Broadcast the payload to all connected devices */
-    // sendBroadcast(payload);
+      sendMessage(uuid, payload);
+    }
   });
 }
 

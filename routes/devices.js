@@ -8,17 +8,19 @@ router.get('/', function(req, res, next) {
 
   var auto_discover = true;
   var auto_connect = true;
+  var end_to_end_encryption = true;
 
   db.serialize(function() {
     db.get("SELECT * FROM configs", [], (err, row) => {
         auto_discover = row['auto_discover'];
         auto_connect = row['auto_connect'];
+        end_to_end_encryption = row['end_to_end_encryption'];
     });
   });
   db.close();
 
   setTimeout(function() {
-    res.render('devices', {auto_discover: auto_discover, auto_connect: auto_connect});
+    res.render('devices', {auto_discover: auto_discover, auto_connect: auto_connect, end_to_end_encryption: end_to_end_encryption});
   }, 100);
 
 });

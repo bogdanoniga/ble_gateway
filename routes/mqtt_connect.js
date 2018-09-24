@@ -9,6 +9,7 @@ var mqtt_address = '';
 var mqtt_connection = '';
 var auto_discover = '';
 var auto_connect = '';
+var end_to_end_encryption = '';
 
 setTimeout(function() {
   db.serialize(function() {
@@ -20,6 +21,7 @@ setTimeout(function() {
         topic_rx = row['topic_rx'];
         auto_discover = row['auto_discover'];
         auto_connect = row['auto_connect'];
+        end_to_end_encryption = row['end_to_end_encryption'];
     });
   });
 }, 2000);
@@ -44,7 +46,7 @@ setTimeout(function() {
     module.exports.topic_rx = topic_rx;
     module.exports.auto_discover = auto_discover;
     module.exports.auto_connect = auto_connect;
+    module.exports.end_to_end_encryption = end_to_end_encryption;
   }, 1000);
 
 }, 4000);
-// END MQTT connect

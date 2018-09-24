@@ -71,6 +71,18 @@
                                   <span class="slider round"></span>
                                 </label>
                               </div>
+
+                              <div id="end_to_end_encryption">
+                                <p class="auto-p">End-to-end Encryption</p>
+                                <label class="switch">
+                                  {% if end_to_end_encryption %}
+                                      <input type="checkbox" checked>
+                                  {% else %}
+                                      <input type="checkbox">
+                                  {% endif %}
+                                  <span class="slider round"></span>
+                                </label>
+                              </div>
                           </div>
                           <table id="devices-table" class="table table-striped table-advance table-hover">
                               <thead>
