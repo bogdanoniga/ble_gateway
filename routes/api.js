@@ -11,12 +11,14 @@ var mqtt_client = '';
 var topic_rx = '';
 var auto_discover = '';
 var auto_connect = '';
+var end_to_end_encryption = '';
 
 setTimeout(function() {
   mqtt_client = mqtt_connection.mqtt_client;
   topic_rx = mqtt_connection.topic_rx;
   auto_discover = mqtt_connection.auto_discover;
   auto_connect = mqtt_connection.auto_connect;
+  end_to_end_encryption = mqtt_connection.end_to_end_encryption;
   /* Activate MQTT on message listener */
   receiveMQTTData();
 }, 6000);
