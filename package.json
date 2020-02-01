@@ -9,14 +9,14 @@
   "dependencies": {
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
-    "debug": "~2.6.9",
-    "express": "~4.15.5",
+    "debug": "^3.1.0",
+    "express": "^4.17.1",
     "merge": "^1.2.0",
     "morgan": "~1.9.0",
     "mqtt": "^2.15.3",
-    "noble": "~1.9.0",
+    "noble": "~1.9.1",
     "serve-favicon": "~2.4.5",
-    "sqlite3": "^4.0.1",
+    "sqlite3": "^4.0.9",
     "twig": "~0.10.3"
   },
   "devDependencies": {
